@@ -2,8 +2,6 @@
 
 #include <L1.h>
 
-namespace L1{
-
-  void generate_code(Program p);
-
+namespace L1 {
+	void generate_code(Program p);
 }

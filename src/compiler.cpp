@@ -16,72 +16,68 @@
 #include <parser.h>
 #include <code_generator.h>
 
-
-void print_help (char *progName){
-  std::cerr << "Usage: " << progName << " [-v] [-g 0|1] [-O 0|1|2] SOURCE" << std::endl;
-  return ;
+void print_help(char *progName) {
+	std::cerr << "Usage: " << progName << " [-v] [-g 0|1] [-O 0|1|2] SOURCE" << std::endl;
+	return;
 }
 
 int main(
-  int argc, 
-  char **argv
-  ){
-  auto enable_code_generator = false;
-  int32_t optLevel = 0;
-  bool verbose;
+	int argc,
+	char **argv
+) {
+	auto enable_code_generator = false;
+	int32_t optLevel = 0;
+	bool verbose;
 
-  /* 
-   * Check the compiler arguments.
-   */
-  if( argc < 2 ) {
-    print_help(argv[0]);
-    return 1;
-  }
-  int32_t opt;
-  while ((opt = getopt(argc, argv, "vg:O:")) != -1) {
-    switch (opt){
-      case 'O':
-        optLevel = strtoul(optarg, NULL, 0);
-        break ;
+	/*
+	 * Check the compiler arguments.
+	 */
+	if (argc < 2) {
+		print_help(argv[0]);
+		return 1;
+	}
+	int32_t opt;
+	while ((opt = getopt(argc, argv, "vg:O:")) != -1) {
+		switch (opt) {
+			case 'O':
+				optLevel = strtoul(optarg, NULL, 0);
+				break;
+			case 'g':
+				enable_code_generator = (strtoul(optarg, NULL, 0) == 0) ? false : true;
+				break;
+			case 'v':
+				verbose = true;
+				break;
+			default:
+				print_help(argv[0]);
+				return 1;
+		}
+	}
 
-      case 'g':
-        enable_code_generator = (strtoul(optarg, NULL, 0) == 0) ? false : true ;
-        break ;
+	/*
+	 * Parse the input file.
+	 */
+	auto p = L1::parse_file(argv[optind]);
 
-      case 'v':
-        verbose = true;
-        break ;
+	/*
+	 * Code optimizations (optional)
+	 */
 
-      default:
-        print_help(argv[0]);
-        return 1;
-    }
-  }
+	/*
+	 * Print the source program.
+	 */
+	if (verbose) {
+		for (auto f : p.functions) {
+			//TODO
+		}
+	}
 
-  /*
-   * Parse the input file.
-   */
-  auto p = L1::parse_file(argv[optind]);
+	/*
+	 * Generate x86_64 assembly.
+	 */
+	if (enable_code_generator) {
+		L1::generate_code(p);
+	}
 
-  /*
-   * Code optimizations (optional)
-   */
-
-  /* 
-   * Print the source program.
-   */
-  if (verbose){
-    for (auto f : p.functions){
-      //TODO
-    }
-  }
-
-  /*
-   * Generate x86_64 assembly.
-   */
-  if (enable_code_generator){
-    L1::generate_code(p);
-  }
-
-  return 0;
+	return 0;
 }
