@@ -37,23 +37,11 @@ namespace pegtl = TAO_PEGTL_NAMESPACE;
 using namespace pegtl;
 
 namespace L1 {
-
-	/*
-	 * Stack of tokens parsed
-	 */
-	std::vector<Item *> parsed_items;
-
 	template<typename Rule>
 	struct with_lookahead : seq<at<Rule>, Rule> {};
 
 	template<typename SpecificRule, typename GeneralRule>
 	struct upcast : seq<at<SpecificRule>, GeneralRule> {};
-
-	/*
-	TODO
-	when do we use pegtl::at? whenever there are two patterns that share a common
-	prefix?
-	*/
 
 	/*
 	 * Grammar rules from now on.
@@ -569,11 +557,11 @@ namespace L1 {
 
 	struct Instructions_rule : plus<
 		seq<
-			seps, // TOOD why not seps with comments?
+			seps_with_comments,
 			bol,
 			spaces,
 			Instruction_rule,
-			seps
+			seps_with_comments
 		>
 	> {};
 
@@ -589,7 +577,6 @@ namespace L1 {
 		Instructions_rule,
 		seps_with_comments,
 		seq<spaces, one<')'>>
-		// TODO why isn't there the opportunity for comments here
 	> {};
 
 	struct Functions_rule : plus<
@@ -607,7 +594,7 @@ namespace L1 {
 		Functions_rule,
 		seps_with_comments,
 		seq<spaces, one< ')' >>,
-		seps // TODO why no comments allowed here
+		seps_with_comments
 	> { };
 
 	struct grammar : must<
@@ -615,20 +602,66 @@ namespace L1 {
 	> {};
 
 	template<typename Rule>
-	using selector = tao::pegtl::parse_tree::selector<
+	struct selector : tao::pegtl::parse_tree::selector<
 		Rule,
 		tao::pegtl::parse_tree::store_content::on<
-			register_rule
+			name,
+			number,
+			register_rule,
+			arithmetic_operator,
+			shift_operator,
+			comparison_operator,
+			function_name
+		>,
+		tao::pegtl::parse_tree::remove_content::on<
+			entry_point_rule,
+			label,
+			function_name_rule,
+			argument_number,
+			local_number,
+			tensor_error_arg_number,
+			lea_factor,
+			call_dest_rule,
+			arithmetic_value_rule,
+			source_value_rule,
+			Functions_rule,
+			Function_rule,
+			Instructions_rule,
+			// Instruction_rule,
+			Instruction_return_rule,
+			Instruction_assignment_rule,
+			Instruction_memory_read_rule,
+			Instruction_memory_write_rule,
+			Instruction_arithmetic_operation_rule,
+			Instruction_shift_operation_register_rule,
+			Instruction_shift_operation_immediate_rule,
+			Instruction_plus_write_memory_rule,
+			Instruction_minus_write_memory_rule,
+			Instruction_plus_read_memory_rule,
+			Instruction_minus_read_memory_rule,
+			Instruction_assignment_compare_rule,
+			Instruction_cjump_rule,
+			Instruction_goto_rule,
+			Instruction_call_rule,
+			Instruction_call_print_rule,
+			Instruction_call_input_rule,
+			Instruction_call_allocate_rule,
+			Instruction_call_tuple_error_rule,
+			Instruction_call_tensor_error_rule,
+			Instruction_writable_increment_rule,
+			Instruction_writable_decrement_rule,
+			Instruction_leaq_rule
 		>
-		// tao::pegtl::parse_tree::remove_content::on<
-		// 	my_rule_4,
-		// 	my_rule_5
-		// >,
 		// tao::pegtl::parse_tree::apply< my_helper >::on<
 		// 	my_rule_7,
 		// 	my_rule_8
 		// >
-	>;
+	> {};
+	template<typename Rule> struct selector<at<Rule>> : std::true_type {
+		static void transform(std::unique_ptr<pegtl::parse_tree::node> &n) {
+			n.reset();
+		}
+	};
 
 	Program parse_file(char *fileName) {
 
@@ -649,10 +682,6 @@ namespace L1 {
 		auto root = pegtl::parse_tree::parse<grammar, selector>(fileInput);
 		if( root ) {
 			parse_tree::print_dot( std::cout, *root );
-		}
-
-		for (Item *item : parsed_items) {
-			std::cout << item->toString() << "\n";
 		}
 
 		return p;
