@@ -39,8 +39,15 @@ namespace L1 {
 
 	Number::Number(int64_t value) : value {value} {}
 
-
 	std::string Number::toString() const {
 		return std::string("Number ") + std::to_string(this->value);
+	}
+
+	// Label methods
+
+	Label::Label(const std::string &name) : name {name} {}
+
+	std::string Label::toString() const {
+		return std::string("Label :") + this->name;
 	}
 }

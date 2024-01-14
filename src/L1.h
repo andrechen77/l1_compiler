@@ -46,6 +46,14 @@ namespace L1 {
 		virtual std::string toString() const override;
 	};
 
+	struct Label : Item {
+		std::string name;
+
+		Label(const std::string &name);
+
+		virtual std::string toString() const override;
+	};
+
 	/*
 	 * Instruction interface.
 	 */

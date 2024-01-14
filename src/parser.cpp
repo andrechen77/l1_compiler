@@ -552,6 +552,7 @@ namespace L1 {
 		with_lookahead<Instruction_minus_read_memory_rule>,
 		with_lookahead<Instruction_assignment_compare_rule>,
 		with_lookahead<Instruction_cjump_rule>,
+		with_lookahead<label>,
 		with_lookahead<Instruction_goto_rule>,
 		with_lookahead<Instruction_call_rule>,
 		with_lookahead<Instruction_call_print_rule>,
@@ -635,7 +636,7 @@ namespace L1 {
 	template<> struct action<number> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a number |" << in.string() << "|" << std::endl;
+			// std::cout << "saw a number |" << in.string() << "|" << std::endl;
 			parsed_items.push_back(new Number(std::stoll(in.string())) );
 		}
 	};
@@ -671,7 +672,8 @@ namespace L1 {
 	template<> struct action<label> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a label |" << in.string() << "|" << std::endl;
+			// std::cout << "saw a label |" << in.string() << "|" << std::endl;
+			parsed_items.push_back(new Label(in.string().substr(1)));
 		}
 	};
 
