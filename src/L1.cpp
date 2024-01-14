@@ -2,9 +2,13 @@
 #include <map>
 
 namespace L1 {
+	// Item methods
+
 	std::string Item::toString() const {
 		return "(unimplemented)";
 	}
+
+	// Register methods
 
 	std::map<std::string, RegisterID> strToRegId {
 		{ "rax", RegisterID::rax },
@@ -29,5 +33,14 @@ namespace L1 {
 
 	std::string Register::toString() const {
 		return std::string("Register ") + this->str;
+	}
+
+	// Number methods
+
+	Number::Number(int64_t value) : value {value} {}
+
+
+	std::string Number::toString() const {
+		return std::string("Number ") + std::to_string(this->value);
 	}
 }

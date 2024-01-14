@@ -31,9 +31,17 @@ namespace L1 {
 
 	struct Register : Item {
 		RegisterID id;
-		std::string str;
+		std::string str; // TODO remove
 
 		Register(const std::string &id);
+
+		virtual std::string toString() const override;
+	};
+
+	struct Number : Item {
+		int64_t value;
+
+		Number(int64_t value);
 
 		virtual std::string toString() const override;
 	};

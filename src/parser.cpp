@@ -620,7 +620,7 @@ namespace L1 {
 	template<> struct action<register_rule> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
-			std::cout << "YOYOYOYOYOYO saw a register |" << in.string() << "|" << std::endl;
+			// std::cout << "saw a register |" << in.string() << "|" << std::endl;
 			parsed_items.push_back(new Register(in.string()));
 		}
 	};
@@ -628,7 +628,7 @@ namespace L1 {
 	template<> struct action<name> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a name |" << in.string() << "|" << std::endl;
+			// std::cout << "saw a name |" << in.string() << "|" << std::endl;
 		}
 	};
 
@@ -636,6 +636,7 @@ namespace L1 {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
 			std::cout << "saw a number |" << in.string() << "|" << std::endl;
+			parsed_items.push_back(new Number(std::stoll(in.string())) );
 		}
 	};
 
