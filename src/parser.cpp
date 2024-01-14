@@ -37,7 +37,7 @@ using namespace pegtl;
 namespace L1 {
 
 	/*
-	 * Tokens parsed
+	 * Stack of tokens parsed
 	 */
 	std::vector<Item *> parsed_items;
 
@@ -498,7 +498,6 @@ namespace L1 {
 		lea_factor
 	> {};
 
-	// TODO add the other types of instructions
 	struct Instruction_rule : sor<
 		with_lookahead<Instruction_assignment_rule>,
 		with_lookahead<Instruction_memory_read_rule>,
@@ -580,35 +579,33 @@ namespace L1 {
 	template<> struct action<function_name_rule> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
-			if (p.entryPointLabel.empty()) {
-				p.entryPointLabel = in.string();
-			} else {
-				auto newF = new Function();
-				newF->name = in.string();
-				p.functions.push_back(newF);
-			}
+			std::cout << "saw a function_name_rule" << std::endl;
+			parsed_items.push_back(new FunctionName { in.string() });
 		}
 	};
 
 	template<> struct action<argument_number> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
+			std::cout << "saw an argument number" << std::endl;
 			auto currentF = p.functions.back();
-			currentF->arguments = std::stoll(in.string());
+			currentF->num_arguments = std::stoll(in.string());
 		}
 	};
 
 	template<> struct action<local_number> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
+			std::cout << "saw a local number" << std::endl;
 			auto currentF = p.functions.back();
-			currentF->locals = std::stoll(in.string());
+			currentF->num_locals = std::stoll(in.string());
 		}
 	};
 
 	template<> struct action <str_return> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
+			std::cout << "saw a str_return" << std::endl;
 			auto currentF = p.functions.back();
 			auto i = new Instruction_ret();
 			currentF->instructions.push_back(i);
@@ -618,6 +615,7 @@ namespace L1 {
 	template<> struct action<register_rdi_rule> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
+			std::cout << "saw a register_rdi" << std::endl;
 			auto r = new Register(RegisterID::rdi);
 			parsed_items.push_back(r);
 		}
@@ -634,6 +632,7 @@ namespace L1 {
 	template<> struct action<Instruction_assignment_rule> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
+			std::cout << "saw an assignment instruction " << std::endl;
 
 			/*
 			 * Fetch the current function.

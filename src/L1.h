@@ -5,56 +5,63 @@
 
 namespace L1 {
 
-	enum RegisterID { rdi, rax };
+	enum struct RegisterID {
+		rax,
+		rbx,
+		rcx,
+		rdx,
+		rdi,
+		rsi,
+		r8,
+		r9,
+		r10,
+		r11,
+		r12,
+		r13,
+		r14,
+		r15,
+		rbp,
+		rsp
+	};
 
-	class Item {};
+	// Every component of the AST is-a Item
+	struct Item {};
 
-	class Register : public Item {
-		public:
-
-		Register (RegisterID r);
-
-		private:
-
+	struct Register : Item {
 		RegisterID ID;
 	};
 
 	/*
 	 * Instruction interface.
 	 */
-	class Instruction {};
+	struct Instruction : Item {};
 
 	/*
 	 * Instructions.
 	 */
-	class Instruction_ret : public Instruction {};
+	struct Instruction_ret : Instruction {};
 
-	class Instruction_assignment : public Instruction {
-		public:
-
-		Instruction_assignment (Item *dst, Item *src);
-
-		private:
-
-		Item *s;
-		Item *d;
+	struct Instruction_assignment : Instruction {
+		Item *source;
+		Item *destination;
 	};
 
 	/*
 	 * Function.
 	 */
-	class Function {
-		public:
-
+	struct Function : Item {
 		std::string name;
-		int64_t arguments;
-		int64_t locals;
+		int64_t num_arguments;
+		int64_t num_locals;
+		// TODO consider changing to value type instead of ptr type
 		std::vector<Instruction *> instructions;
 	};
 
-	class Program {
-		public:
+	struct FunctionName : Item {
+		std::string name;
+	};
 
+	struct Program {
 		std::string entryPointLabel;
 		std::vector<Function *> functions;
 	};
