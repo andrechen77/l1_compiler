@@ -50,4 +50,12 @@ namespace L1 {
 	std::string Label::toString() const {
 		return std::string("Label :") + this->name;
 	}
+
+	// FunctionName methods
+
+	FunctionName::FunctionName(const std::string &name) : name {name} {}
+
+	std::string FunctionName::toString() const {
+		return std::string("FunctionName @") + this->name;
+	}
 }

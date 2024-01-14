@@ -54,6 +54,14 @@ namespace L1 {
 		virtual std::string toString() const override;
 	};
 
+	struct FunctionName : Item {
+		std::string name;
+
+		FunctionName(const std::string &name);
+
+		virtual std::string toString() const override;
+	};
+
 	/*
 	 * Instruction interface.
 	 */
@@ -78,10 +86,6 @@ namespace L1 {
 		int64_t num_locals;
 		// TODO consider changing to value type instead of ptr type
 		std::vector<Instruction *> instructions;
-	};
-
-	struct FunctionName : Item {
-		std::string name;
 	};
 
 	struct Program {

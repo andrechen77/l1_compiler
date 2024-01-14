@@ -680,7 +680,8 @@ namespace L1 {
 	template<> struct action<function_name_rule> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a function name |" << in.string() << "|" << std::endl;
+			// std::cout << "saw a function name |" << in.string() << "|" << std::endl;
+			parsed_items.push_back(new FunctionName(in.string().substr(1)));
 		}
 	};
 
