@@ -663,7 +663,35 @@ namespace L1 {
 		}
 	};
 
-	Program parse_file(char *fileName) {
+	// using node = pegtl::parse_tree::node;
+	using node_ptr = std::unique_ptr<tao::pegtl::parse_tree::node>;
+
+	// Function *parse_function(const node_ptr &root) {
+	// 	Function *f = new Function;
+
+	// 	std::cout << function_ptr->children[0]->children[0]->string() << std::endl;
+	// }
+
+	std::unique_ptr<Program> parse_tree(const node_ptr &root) {
+		auto p = std::make_unique<Program>();
+
+		node_ptr &programNode = root->children[0];
+
+		// entry point
+		node_ptr &entryNameNode = programNode->children[0]->children[0];
+		p->entryPointLabel = entryNameNode->string();
+
+		// functions
+		node_ptr &functionsNode = programNode->children[1];
+		for (node_ptr &function_ptr : functionsNode->children) {
+			// Function *f = parse_function(function_ptr);
+			// p->functions.push_back(f);
+		}
+
+		return p;
+	}
+
+	std::unique_ptr<Program> parse_file(char *fileName) {
 
 		/*
 		 * Check the grammar for some possible issues.
@@ -677,13 +705,16 @@ namespace L1 {
 		 * Parse.
 		 */
 		file_input<> fileInput(fileName);
-		Program p;
-		// parse<grammar, action>(fileInput, p);
 		auto root = pegtl::parse_tree::parse<grammar, selector>(fileInput);
-		if( root ) {
-			parse_tree::print_dot( std::cout, *root );
+		if (root) {
+			return parse_tree(root);
+		} else {
+			std::cerr << "no prase u bad" << std::endl;
+			exit(1);
 		}
+		// if (root) {
+		// 	parse_tree::print_dot( std::cout, *root );
+		// }
 
-		return p;
 	}
 }

@@ -66,17 +66,17 @@ int main(
 	/*
 	 * Print the source program.
 	 */
-	if (verbose) {
-		for (auto f : p.functions) {
-			//TODO
-		}
-	}
+	// if (verbose) {
+	// 	for (auto f : p.functions) {
+	// 		//TODO
+	// 	}
+	// }
 
 	/*
 	 * Generate x86_64 assembly.
 	 */
 	if (enable_code_generator) {
-		L1::generate_code(p);
+		// L1::generate_code(p);
 	}
 
 	return 0;
