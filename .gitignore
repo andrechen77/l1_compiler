@@ -7,3 +7,5 @@ L1c
 L1i
 *.o
 *.S
+*.txt
+*.svg
