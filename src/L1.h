@@ -85,11 +85,11 @@ namespace L1 {
 		int64_t num_arguments;
 		int64_t num_locals;
 		// TODO consider changing to value type instead of ptr type
-		std::vector<Instruction *> instructions;
+		std::vector<std::unique_ptr<Instruction>> instructions;
 	};
 
 	struct Program {
 		std::string entryPointLabel;
-		std::vector<Function *> functions;
+		std::vector<std::unique_ptr<Function>> functions;
 	};
 }

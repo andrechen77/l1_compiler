@@ -666,11 +666,24 @@ namespace L1 {
 	// using node = pegtl::parse_tree::node;
 	using node_ptr = std::unique_ptr<tao::pegtl::parse_tree::node>;
 
-	// Function *parse_function(const node_ptr &root) {
-	// 	Function *f = new Function;
+	std::unique_ptr<Instruction> parse_instruction(const node_ptr &inst_node) {
+		auto inst = std::make_unique<Instruction>();
+		return inst;
+	}
 
-	// 	std::cout << function_ptr->children[0]->children[0]->string() << std::endl;
-	// }
+	std::unique_ptr<Function> parse_function(const node_ptr &function_rule) {
+		auto f = std::make_unique<Function>();
+
+		f->name = function_rule->children[0]->children[0]->string();
+		f->num_arguments = std::stoll(function_rule->children[1]->children[0]->string());
+		f->num_locals = std::stoll(function_rule->children[2]->children[0]->string());
+
+		for (node_ptr &instruction : function_rule->children[3]->children) {
+			f->instructions.push_back(parse_instruction(instruction));
+		}
+
+		return f;
+	}
 
 	std::unique_ptr<Program> parse_tree(const node_ptr &root) {
 		auto p = std::make_unique<Program>();
@@ -684,8 +697,7 @@ namespace L1 {
 		// functions
 		node_ptr &functionsNode = programNode->children[1];
 		for (node_ptr &function_ptr : functionsNode->children) {
-			// Function *f = parse_function(function_ptr);
-			// p->functions.push_back(f);
+			p->functions.push_back(parse_function(function_ptr));
 		}
 
 		return p;
