@@ -25,10 +25,17 @@ namespace L1 {
 	};
 
 	// Every component of the AST is-a Item
-	struct Item {};
+	struct Item {
+		virtual std::string toString() const;
+	};
 
 	struct Register : Item {
-		RegisterID ID;
+		RegisterID id;
+		std::string str;
+
+		Register(const std::string &id);
+
+		virtual std::string toString() const override;
 	};
 
 	/*

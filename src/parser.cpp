@@ -621,6 +621,7 @@ namespace L1 {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
 			std::cout << "YOYOYOYOYOYO saw a register |" << in.string() << "|" << std::endl;
+			parsed_items.push_back(new Register(in.string()));
 		}
 	};
 
@@ -1067,6 +1068,10 @@ namespace L1 {
 		file_input<> fileInput(fileName);
 		Program p;
 		parse<grammar, action>(fileInput, p);
+
+		for (Item *item : parsed_items) {
+			std::cout << item->toString() << "\n";
+		}
 
 		return p;
 	}
