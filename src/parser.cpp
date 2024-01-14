@@ -87,18 +87,28 @@ namespace L1 {
 	> {};
 
 	// "F" in the grammar
-	struct tensor_error_arg_number : sor<
-		one<'1'>,
-		one<'3'>,
-		one<'4'>
+	struct tensor_error_arg_number : seq<
+		at<
+			sor<
+				one<'1'>,
+				one<'3'>,
+				one<'4'>
+			>
+		>,
+		number
 	> {};
 
 	// "E" in the grammar
-	struct lea_factor : sor<
-		one<'1'>,
-		one<'2'>,
-		one<'4'>,
-		one<'8'>
+	struct lea_factor : seq<
+		at<
+			sor<
+				one<'1'>,
+				one<'2'>,
+				one<'4'>,
+				one<'8'>
+			>
+		>,
+		number
 	> {};
 
 	/*
@@ -575,6 +585,8 @@ namespace L1 {
 	 */
 	template<typename Rule>
 	struct action : pegtl::nothing<Rule> {};
+
+
 
 	Program parse_file(char *fileName) {
 
