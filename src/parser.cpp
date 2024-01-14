@@ -44,6 +44,9 @@ namespace L1 {
 	template<typename Rule>
 	struct with_lookahead : seq<at<Rule>, Rule> {};
 
+	template<typename SpecificRule, typename GeneralRule>
+	struct upcast : seq<at<SpecificRule>, GeneralRule> {};
+
 	/*
 	TODO
 	when do we use pegtl::at? whenever there are two patterns that share a common
@@ -86,27 +89,27 @@ namespace L1 {
 		one<'0'>
 	> {};
 
+	struct argument_number : seq<number> {};
+
+	struct local_number : seq<number> {};
+
 	// "F" in the grammar
-	struct tensor_error_arg_number : seq<
-		at<
-			sor<
-				one<'1'>,
-				one<'3'>,
-				one<'4'>
-			>
+	struct tensor_error_arg_number : upcast<
+		sor<
+			one<'1'>,
+			one<'3'>,
+			one<'4'>
 		>,
 		number
 	> {};
 
 	// "E" in the grammar
-	struct lea_factor : seq<
-		at<
-			sor<
-				one<'1'>,
-				one<'2'>,
-				one<'4'>,
-				one<'8'>
-			>
+	struct lea_factor : upcast<
+		sor<
+			one<'1'>,
+			one<'2'>,
+			one<'4'>,
+			one<'8'>
 		>,
 		number
 	> {};
@@ -178,38 +181,69 @@ namespace L1 {
 	struct register_rbp_rule : str_rbp {};
 	struct register_rsp_rule : str_rsp {};
 
-	struct register_shift_rule : sor<
-		register_rcx_rule
-	> {};
-
-	// "a" in the grammer
-	struct register_idk_rule : sor<
-		register_rdi_rule,
-		register_rsi_rule,
-		register_rdx_rule,
-		register_shift_rule,
-		register_r8_rule,
-		register_r9_rule
-	> {};
-
-	// "w" in the grammar
-	struct register_writable_rule : sor<
-		register_idk_rule,
+	struct register_rule : sor<
 		register_rax_rule,
 		register_rbx_rule,
-		register_rbp_rule,
+		register_rcx_rule,
+		register_rdx_rule,
+		register_rdi_rule,
+		register_rsi_rule,
+		register_r8_rule,
+		register_r9_rule,
 		register_r10_rule,
 		register_r11_rule,
 		register_r12_rule,
 		register_r13_rule,
 		register_r14_rule,
-		register_r15_rule
+		register_r15_rule,
+		register_rbp_rule,
+		register_rsp_rule
+	> {};
+
+	struct register_shift_rule : upcast<
+		sor<
+			register_rcx_rule
+		>,
+		register_rule
+	> {};
+
+	// "a" in the grammer
+	struct register_idk_rule : upcast<
+		sor<
+			register_rdi_rule,
+			register_rsi_rule,
+			register_rdx_rule,
+			register_shift_rule,
+			register_r8_rule,
+			register_r9_rule
+		>,
+		register_rule
+	> {};
+
+	// "w" in the grammar
+	struct register_writable_rule : upcast<
+		sor<
+			register_idk_rule,
+			register_rax_rule,
+			register_rbx_rule,
+			register_rbp_rule,
+			register_r10_rule,
+			register_r11_rule,
+			register_r12_rule,
+			register_r13_rule,
+			register_r14_rule,
+			register_r15_rule
+		>,
+		register_rule
 	> {};
 
 	// "x" in the grammar
-	struct register_any_rule : sor<
-		register_writable_rule,
-		register_rsp_rule
+	struct register_any_rule : upcast<
+		sor<
+			register_writable_rule,
+			register_rsp_rule
+		>,
+		register_rule
 	> {};
 
 	// "u" in the grammar
@@ -254,10 +288,6 @@ namespace L1 {
 
 	// TODO remove bc it's not necessary
 	struct function_name : label {};
-
-	struct argument_number : number {};
-
-	struct local_number : number {};
 
 	struct comment : disable<
 		TAO_PEGTL_STRING("//"),
@@ -587,6 +617,13 @@ namespace L1 {
 	template<typename Rule>
 	struct action : pegtl::nothing<Rule> {};
 
+	template<> struct action<register_rule> {
+		template<typename Input>
+		static void apply(const Input &in, Program &p) {
+			std::cout << "YOYOYOYOYOYO saw a register |" << in.string() << "|" << std::endl;
+		}
+	};
+
 	template<> struct action<name> {
 		template<typename Input>
 		static void apply(const Input &in, Program &p) {
@@ -601,33 +638,33 @@ namespace L1 {
 		}
 	};
 
-	template<> struct action<tensor_error_arg_number> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a tensor_error_arg_number |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<tensor_error_arg_number> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a tensor_error_arg_number |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<lea_factor> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a lea_factor |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<lea_factor> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a lea_factor |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<argument_number> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a argument_number |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<argument_number> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a argument_number |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<local_number> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a local_number |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<local_number> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a local_number |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
 	template<> struct action<label> {
 		template<typename Input>
@@ -643,145 +680,145 @@ namespace L1 {
 		}
 	};
 
-	template<> struct action<register_rax_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_rax_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rax_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_rax_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_rbx_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_rbx_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rbx_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_rbx_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_rcx_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_rcx_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rcx_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_rcx_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_rdx_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_rdx_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rdx_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_rdx_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_rdi_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a struct register_rdi_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rdi_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a struct register_rdi_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_rsi_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_rsi_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rsi_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_rsi_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r8_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r8_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r8_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r8_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r9_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r9_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r9_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r9_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r10_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r10_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r10_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r10_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r11_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r11_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r11_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r11_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r12_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r12_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r12_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r12_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r13_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r13_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r13_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r13_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r14_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r14_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r14_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r14_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_r15_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_r15_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_r15_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_r15_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_rbp_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_rbp_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rbp_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_rbp_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_rsp_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_rsp_rule | " << in.string() << std::endl;
-		}
-	};
+	// template<> struct action<register_rsp_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_rsp_rule | " << in.string() << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_shift_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_shift_rule |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<register_shift_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_shift_rule |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_writable_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_writable_rule |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<register_writable_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_writable_rule |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_idk_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register_idk_rule |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<register_idk_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register_idk_rule |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
-	template<> struct action<register_any_rule> {
-		template<typename Input>
-		static void apply(const Input &in, Program &p) {
-			std::cout << "saw a register |" << in.string() << "|" << std::endl;
-		}
-	};
+	// template<> struct action<register_any_rule> {
+	// 	template<typename Input>
+	// 	static void apply(const Input &in, Program &p) {
+	// 		std::cout << "saw a register |" << in.string() << "|" << std::endl;
+	// 	}
+	// };
 
 	template<> struct action<call_dest_rule> {
 		template<typename Input>
