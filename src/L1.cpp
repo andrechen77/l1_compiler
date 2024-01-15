@@ -212,4 +212,8 @@ namespace L1 {
 
 		return std::string("\taddq $") + std::to_string(num_bytes) + ", %rsp\n\tretq\n";
 	}
+
+	std::string InstructionGoto::to_x86(Program &p, Function &f) const {
+		return std::string("\tgoto ") + L1::mangle_name(this->label->labelName) + "\n";
+	}
 }
