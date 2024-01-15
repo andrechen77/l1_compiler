@@ -192,4 +192,19 @@ namespace L1 {
 	std::string Instruction::to_x86(Program &p, Function &f) const {
 		return "\ti am instruction lol\n";
 	}
+
+	std::string InstructionReturn::to_x86(Program &p, Function &f) const {
+		// find how much stack space to rewind for both the local variables
+		// and the stack arguments
+		// L1 convention is return addr, args, then locals
+		auto num_stack_args = f.num_arguments - 6;
+		if (num_stack_args < 0) {
+			num_stack_args = 0;
+		}
+
+		auto num_bytes = 8 * (num_stack_args + f.num_locals);
+		// don't +1 for the return address because that will be popped by `retq`
+
+		return std::string("\taddq $") + std::to_string(num_bytes) + ", %rsp\n\tretq\n";
+	}
 }

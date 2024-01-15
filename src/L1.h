@@ -87,6 +87,7 @@ namespace L1 {
 	 */
 	struct InstructionReturn : Instruction {
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
 
 	// TODO rename to `AssignOperator` for consistency
