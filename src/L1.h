@@ -109,6 +109,10 @@ namespace L1 {
 		std::string labelName;
 	};
 
+	struct InstructionGoto : Instruction {
+		std::string labelName;
+	};
+
 	/*
 	 * Function.
 	 */

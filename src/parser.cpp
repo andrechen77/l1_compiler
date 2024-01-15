@@ -673,9 +673,9 @@ namespace L1 {
 		} else if (node->is_type<number>()) {
 			return std::make_unique<Number>(std::stoll(node->string()));
 		} else if (node->is_type<label>()) {
-			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1));
+			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1)); // TODO remove substring ops
 		} else if (node->is_type<function_name_rule>()) {
-			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1));
+			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1)); // TODO remove substr ops
 		} else {
 			exit(1);
 			// TODO error
@@ -770,6 +770,11 @@ namespace L1 {
 			// children: name
 			auto inst = std::make_unique<InstructionLabel>();
 			inst->name = inst_node->children[0]->string();
+			return inst;
+		} else if (inst_node->is_type<Instruction_goto_rule>()) {
+			// children: label
+			auto inst = std::make_unique<InstructionGoto>();
+			inst->labelName = inst_node->children[0]->children[0]->string();
 			return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
