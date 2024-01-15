@@ -780,26 +780,31 @@ namespace L1 {
 		} else if (inst_node->is_type<Instruction_call_print_rule>()) {
             auto inst = std::make_unique<InstructionCallFunction>();
             inst->functionName = "print";
+			inst->isStd = true;
             inst->num_arguments = 1;
             return inst;
 		} else if (inst_node->is_type<Instruction_call_allocate_rule>()) {
             auto inst = std::make_unique<InstructionCallFunction>();
             inst->functionName = "allocate";
+			inst->isStd = true;
             inst->num_arguments = 2;
             return inst;
         } else if (inst_node->is_type<Instruction_call_input_rule>()) {
             auto inst = std::make_unique<InstructionCallFunction>();
             inst->functionName = "input";
+			inst->isStd = true;
             inst->num_arguments = 0;
             return inst;
         } else if (inst_node->is_type<Instruction_call_tuple_error_rule>()) {
             auto inst = std::make_unique<InstructionCallFunction>();
             inst->functionName = "tuple_error";
+			inst->isStd = true;
             inst->num_arguments = 3;
             return inst;
         } else if (inst_node->is_type<Instruction_call_tensor_error_rule>()) {
             auto inst = std::make_unique<InstructionCallFunction>();
-            inst->functionName = "tensor_errorr";
+            inst->functionName = "tensor_error";
+			inst->isStd = true;
             inst->num_arguments = std::stoll(inst_node->children[0]->string());
             return inst;
 		} else if (inst_node->is_type<Instruction_call_rule>()){
@@ -810,7 +815,8 @@ namespace L1 {
 				return inst;
             } else {
                 auto inst = std::make_unique<InstructionCallFunction>();
-                inst->functionName = std::string("_") + inst_node->children[0]->children[0]->string();
+                inst->functionName = inst_node->children[0]->children[0]->string();
+				inst->isStd = false;
                 inst->num_arguments = std::stoll(inst_node->children[1]->string());
 				return inst;
             }

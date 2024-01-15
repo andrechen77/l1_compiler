@@ -147,6 +147,7 @@ namespace L1 {
 
 	struct InstructionCallFunction : Instruction {
         std::string functionName;
+		bool isStd;
         int64_t num_arguments;
 
 		virtual std::string toString() const override;
