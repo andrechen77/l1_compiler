@@ -24,63 +24,52 @@ namespace L1 {
 		rsp
 	};
 
-	// Every component of the AST is-a Item
-	struct Item {
-		virtual std::string toString() const;
-	};
+	struct Value {};
 
-	struct Register : Item {
+	struct Register : Value {
 		RegisterID id;
-		std::string str; // TODO remove
+		std::string str;
 
 		Register(const std::string &id);
-
-		virtual std::string toString() const override;
 	};
 
-	struct Number : Item {
+
+	struct MemoryLocation : Value {
+		Register reg;
+		int64_t offset;
+	};
+
+	struct Number : Value {
 		int64_t value;
-
-		Number(int64_t value);
-
-		virtual std::string toString() const override;
 	};
 
-	struct Label : Item {
+	struct FunctionName  {
 		std::string name;
-
-		Label(const std::string &name);
-
-		virtual std::string toString() const override;
-	};
-
-	struct FunctionName : Item {
-		std::string name;
-
-		FunctionName(const std::string &name);
-
-		virtual std::string toString() const override;
 	};
 
 	/*
 	 * Instruction interface.
 	 */
-	struct Instruction : Item {};
+	struct Instruction {};
+
+	struct Label : Instruction {
+		std::string name;
+	};
 
 	/*
 	 * Instructions.
 	 */
-	struct Instruction_ret : Instruction {};
+	struct InstructionReturn : Instruction {};
 
-	struct Instruction_assignment : Instruction {
-		Item *source;
-		Item *destination;
+	struct InstructionAssignment : Instruction {
+		std::unique_ptr<Value> source;
+		std::unique_ptr<Value> destination;
 	};
 
 	/*
 	 * Function.
 	 */
-	struct Function : Item {
+	struct Function {
 		std::string name;
 		int64_t num_arguments;
 		int64_t num_locals;

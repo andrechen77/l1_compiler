@@ -619,11 +619,11 @@ namespace L1 {
 			function_name_rule,
 			argument_number,
 			local_number,
-			tensor_error_arg_number,
-			lea_factor,
-			call_dest_rule,
-			arithmetic_value_rule,
-			source_value_rule,
+			// tensor_error_arg_number,
+			// lea_factor,
+			// call_dest_rule,
+			// arithmetic_value_rule,
+			// source_value_rule,
 			Functions_rule,
 			Function_rule,
 			Instructions_rule,
@@ -666,9 +666,25 @@ namespace L1 {
 	// using node = pegtl::parse_tree::node;
 	using node_ptr = std::unique_ptr<tao::pegtl::parse_tree::node>;
 
+	std::unique_ptr<arithmetic_value_rule> parse_value(const node_ptr &node) {
+		return {};
+	}
+
 	std::unique_ptr<Instruction> parse_instruction(const node_ptr &inst_node) {
-		auto inst = std::make_unique<Instruction>();
-		return inst;
+		std::cout << "found a " << inst_node->type << " instruction\n";
+		if (inst_node->is_type<Instruction_return_rule>()) {
+			auto inst = std::make_unique<InstructionReturn>();
+			return inst;
+		} else if (inst_node->is_type<Instruction_assignment_rule>()) {
+			auto inst = std::make_unique<InstructionAssignment>();
+			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
+			inst->source = std::make_unique<Register>(inst_node->children[1]->string());
+			// TODO ^above could be an immediate or label
+			return inst;
+		} else {
+			// unknown instruction type
+			exit(1);
+		}
 	}
 
 	std::unique_ptr<Function> parse_function(const node_ptr &function_rule) {
