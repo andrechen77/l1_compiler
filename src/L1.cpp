@@ -225,10 +225,6 @@ namespace L1 {
 
 	// to_x86 methods here
 
-	std::string Instruction::to_x86(Program &p, Function &f) const {
-		return "\t// -----\n";
-	}
-
 	std::string InstructionLabel::to_x86(Program &p, Function &f) const {
 		return L1::mangle_name(this->label->labelName) + ":\n";
 	}
@@ -396,6 +392,17 @@ namespace L1 {
 			return std::string("\tsubq $") + std::to_string(numBytes) + ", %rsp\n"
 				"\tjmp " + L1::mangle_name(this->functionName) + "\n";
 		}
+	}
+
+	std::string InstructionCallRegister::to_x86(Program &p, Function &f) const {
+		// TODO add argument-checking?
+		auto numStackArgs = this->num_arguments - 6;
+		if (numStackArgs < 0) {
+			numStackArgs = 0;
+		}
+		auto numBytes = 8 * (numStackArgs + 1); // +1 to account for return addr
+		return std::string("\tsubq $") + std::to_string(numBytes) + ", %rsp\n"
+			"\tjmp *" + this->reg->to_x86(p, f) + "\n";
 	}
 
 	std::string InstructionLeaq::to_x86(Program &p, Function &f) const {
