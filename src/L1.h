@@ -146,6 +146,7 @@ namespace L1 {
 		std::unique_ptr<LabelLocation> label;
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
 
 	struct InstructionGoto : Instruction {

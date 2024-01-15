@@ -275,8 +275,9 @@ namespace L1 {
         return "_" + labelName;
     }
 
+	static const std::string x86_cmp_keywords[] = {"l", "le", "eq", "ge", "g"};
+
 	std::string InstructionCompareAssignment::to_x86(Program &p, Function &f) const {
-		static const std::string x86_cmp_keywords[] = {"l", "le", "eq", "ge", "g"};
 
 		Value *lhs = this->lhs.get();
 		Value *rhs = this->rhs.get();
@@ -310,6 +311,41 @@ namespace L1 {
 		return result;
 	}
 
+	std::string InstructionCompareJump::to_x86(Program &p, Function &f) const {
+		Value *lhs = this->lhs.get();
+		Value *rhs = this->rhs.get();
+
+		Number *l_num_ptr = dynamic_cast<Number *>(this->lhs.get());
+		Number *r_num_ptr = dynamic_cast<Number *>(this->rhs.get());
+
+		std::string mangled_label = L1::mangle_name(this->label->labelName);
+
+		if (l_num_ptr && r_num_ptr) {
+			// both are constants
+			int64_t lhs_value = l_num_ptr->value;
+			int64_t rhs_value = r_num_ptr->value;
+			bool result = executeComparisonOperator(this->op, lhs_value, rhs_value);
+			if (result) {
+				return std::string("\tjmp ") + mangled_label + "\n";
+			} else {
+				return "";
+			}
+		}
+
+		int swap = 1; // whether to use gt/ge operators instead of le/lt
+		if (l_num_ptr) {
+			// lhs is a constant so swap lhs and rhs so that lhs is non-constant
+			auto temp = lhs;
+			lhs = rhs;
+			rhs = temp;
+			swap = -1;
+		}
+
+		std::string result = "\tcmpq ";
+		result += rhs->to_x86(p, f) + ", " + lhs->to_x86(p, f) + "\n";
+		result += "\tj" + x86_cmp_keywords[static_cast<int>(this->op) * swap + 2] + " " + mangled_label + "\n";
+		return result;
+	}
 
 	std::string InstructionGoto::to_x86(Program &p, Function &f) const {
 		return std::string("\tjmp ") + L1::mangle_name(this->label->labelName) + "\n";
