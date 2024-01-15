@@ -758,6 +758,14 @@ namespace L1 {
 			inst->op = toComparisonOperator(inst_node->children[2]->string());
 			inst->rhs = parse_source_value(inst_node->children[3]);
 			return inst;
+		} else if (inst_node->is_type<Instruction_cjump_rule>()) {
+			// children: arithmetic_value, comparison_operator, arithmetic_value, label
+			auto inst = std::make_unique<InstructionCompareJump>();
+			inst->lhs = parse_source_value(inst_node->children[0]);
+			inst->op = toComparisonOperator(inst_node->children[1]->string());
+			inst->rhs = parse_source_value(inst_node->children[2]);
+			inst->labelName = inst_node->children[3]->string();
+			return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
 			exit(1);

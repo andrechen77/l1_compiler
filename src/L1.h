@@ -102,6 +102,13 @@ namespace L1 {
 		std::unique_ptr<Value> rhs;
 	};
 
+	struct InstructionCompareJump : Instruction {
+		ComparisonOperator op;
+		std::unique_ptr<Value> lhs;
+		std::unique_ptr<Value> rhs;
+		std::string labelName;
+	};
+
 	/*
 	 * Function.
 	 */
