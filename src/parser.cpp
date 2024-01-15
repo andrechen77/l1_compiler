@@ -673,9 +673,9 @@ namespace L1 {
 		} else if (node->is_type<number>()) {
 			return std::make_unique<Number>(std::stoll(node->string()));
 		} else if (node->is_type<label>()) {
-			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1)); // TODO remove substring ops
+			return std::make_unique<LabelLocation>(node->children[0]->string());
 		} else if (node->is_type<function_name_rule>()) {
-			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1)); // TODO remove substr ops
+			return std::make_unique<LabelLocation>(node->children[0]->string());
 		} else {
 			exit(1);
 			// TODO error
