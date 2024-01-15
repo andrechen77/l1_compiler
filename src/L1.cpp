@@ -293,7 +293,7 @@ namespace L1 {
 		return "$_" + labelName;
 	}
 
-	static const std::string x86_cmp_keywords[] = {"l", "le", "eq", "ge", "g"};
+	static const std::string x86_cmp_keywords[] = {"l", "le", "e", "ge", "g"};
 
 	std::string InstructionCompareAssignment::to_x86(Program &p, Function &f) const {
 
