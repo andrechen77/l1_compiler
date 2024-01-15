@@ -42,7 +42,9 @@ namespace L1 {
 		o << mangle_name(function.name) << ":\n";
 
 		// allocate space for local variables
-		o << "\tsubq $" << (function.num_locals * 8) << ", %rsp\n";
+		if (function.num_locals > 0) {
+			o << "\tsubq $" << (function.num_locals * 8) << ", %rsp\n";
+		}
 
 		for (auto &instruction : function.instructions) {
 			write_instruction(o, p, function, *instruction);

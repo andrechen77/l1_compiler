@@ -245,11 +245,15 @@ namespace L1 {
 		auto num_bytes = 8 * (num_stack_args + f.num_locals);
 		// don't +1 for the return address because that will be popped by `retq`
 
-		return std::string("\taddq $") + std::to_string(num_bytes) + ", %rsp\n\tretq\n";
+		if (num_bytes > 0) {
+			return std::string("\taddq $") + std::to_string(num_bytes) + ", %rsp\n\tretq\n";
+		} else {
+			return "\tretq\n";
+		}
 	}
 
 	std::string InstructionAssignment::to_x86(Program &p, Function &f) const {
-		static const std::string x86_keywords[] = {"movq", "addq", "subq", "imulq", "andq", "salq", "salq"};
+		static const std::string x86_keywords[] = {"movq", "addq", "subq", "imulq", "andq", "salq", "sarq"};
 		std::string result = "\t";
 		std::string operator_str = x86_keywords[static_cast<int>(op)];
 		std::string source = this->source->to_x86(p, f);
