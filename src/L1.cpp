@@ -1,6 +1,7 @@
 #include "L1.h"
 #include "code_generator.h"
 #include <map>
+#include <iostream>
 
 namespace L1 {
 	// Register methods
@@ -215,5 +216,34 @@ namespace L1 {
 
 	std::string InstructionGoto::to_x86(Program &p, Function &f) const {
 		return std::string("\tgoto ") + L1::mangle_name(this->label->labelName) + "\n";
+	}
+
+	std::string InstructionCallFunction::to_x86(Program &p, Function &f) const {
+		// TODO add argument-checking?
+		if (this->isStd) {
+			if (this->functionName == "tensor_error") {
+				switch (this->num_arguments) {
+					case 1:
+						return "\tcall array_tensor_error_null\n";
+					case 3:
+						return "\tcall array_tensor\n";
+					case 4:
+						return "\tcall tensor_error\n";
+					default:
+						std::cerr << "Invalid number of tensor args... how did this get past the parser?\n";
+						exit(1);
+				}
+			} else {
+				return std::string("\tcall ") + this->functionName + "\n";
+			}
+		} else {
+			auto numStackArgs = this->num_arguments - 6;
+			if (numStackArgs < 0) {
+				numStackArgs = 0;
+			}
+			auto numBytes = 8 * (numStackArgs + 1); // +1 to account for return addr
+			return std::string("\tsubq $") + std::to_string(numBytes) + ", %rsp\n"
+				"\tjmp " + L1::mangle_name(this->functionName) + "\n";
+		}
 	}
 }

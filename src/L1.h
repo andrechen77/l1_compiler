@@ -151,6 +151,7 @@ namespace L1 {
         int64_t num_arguments;
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
     };
 
 	struct InstructionCallRegister : Instruction {
