@@ -118,6 +118,11 @@ namespace L1 {
         int64_t num_arguments;
     };
 
+	struct InstructionCallRegister : Instruction {
+        std::unique_ptr<Register> reg;
+        int64_t num_arguments;
+    };
+
 	/*
 	 * Function.
 	 */

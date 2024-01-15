@@ -801,6 +801,18 @@ namespace L1 {
             inst->functionName = "tensor_errorr";
             inst->num_arguments = std::stoll(inst_node->children[0]->string());
             return inst;
+		} else if (inst_node->is_type<Instruction_call_rule>()){
+            if (inst_node->children[0]->is_type<register_rule>()){
+                auto inst = std::make_unique<InstructionCallRegister>();
+                inst->reg = std::make_unique<Register>(inst_node->children[0]->string());
+                inst->num_arguments = std::stoll(inst_node->children[1]->string());
+				return inst;
+            } else {
+                auto inst = std::make_unique<InstructionCallFunction>();
+                inst->functionName = std::string("_") + inst_node->children[0]->children[0]->string();
+                inst->num_arguments = std::stoll(inst_node->children[1]->string());
+				return inst;
+            }
 		} else if (inst_node->is_type<Instruction_writable_increment_rule>()) {
 			auto inst = std::make_unique<InstructionAssignment>();
 			inst->source = std::make_unique<Number>(1);
