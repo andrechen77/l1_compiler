@@ -320,12 +320,12 @@ namespace L1 {
 			swap = -1;
 		}
 
-		std::string lowerBits = dynamic_cast<Register *>(lhs)->lowerBytesName();
+		std::string lowerBits = dynamic_cast<Register &>(*this->destination).lowerBytesName();
 		std::string result = "\tcmpq ";
 		result += rhs->to_x86(p, f) + ", " + lhs->to_x86(p, f) + "\n";
 		result += "\tset" + x86_cmp_keywords[static_cast<int>(this->op) * swap + 2];
 		result += " %" + lowerBits + "\n";
-		result += "\tmovzbq %" + lowerBits + ", " + lhs->to_x86(p, f) + "\n";
+		result += "\tmovzbq %" + lowerBits + ", " + this->destination->to_x86(p, f) + "\n";
 		return result;
 	}
 
