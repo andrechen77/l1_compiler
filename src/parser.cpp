@@ -271,8 +271,8 @@ namespace L1 {
 
 	// "cmp" in the grammar
 	struct comparison_operator : sor<
-		str_lt,
 		str_le,
+		str_lt,
 		str_eq
 	> {};
 
@@ -753,7 +753,7 @@ namespace L1 {
             inst->source = parse_memory_location(inst_node->children[1], inst_node->children[2]);
             inst->op = AssignOperation::subtract;
 			return inst;
-		} else if (inst_node->is_type<Instruction_assignment_compare_rule>()) {
+	} else if (inst_node->is_type<Instruction_assignment_compare_rule>()) {
 			// children: register_writable, arithmetic_value, comparison_operator, arithmetic_value
 			auto inst = std::make_unique<InstructionCompareAssignment>();
 			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());

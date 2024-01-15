@@ -249,7 +249,7 @@ namespace L1 {
 	}
 
 	std::string InstructionAssignment::to_x86(Program &p, Function &f) const {
-		static const std::string x86_keywords[] = {"movq", "addq", "subq", "mulq", "andq", "salq", "salq"};
+		static const std::string x86_keywords[] = {"movq", "addq", "subq", "imulq", "andq", "salq", "salq"};
 		std::string result = "\t";
 		std::string operator_str = x86_keywords[static_cast<int>(op)];
 		std::string source = this->source->to_x86(p, f);
