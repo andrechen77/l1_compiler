@@ -2,12 +2,6 @@
 #include <map>
 
 namespace L1 {
-	// Item methods
-
-	std::string Item::toString() const {
-		return "(unimplemented)";
-	}
-
 	// Register methods
 
 	std::map<std::string, RegisterID> strToRegId {
@@ -31,31 +25,41 @@ namespace L1 {
 
 	Register::Register(const std::string &id) : id {strToRegId[id]}, str {id} {}
 
-	std::string Register::toString() const {
-		return std::string("Register ") + this->str;
-	}
+	// std::string Register::toString() const {
+	// 	return std::string("Register ") + this->str;
+	// }
+
+	// LabelLocation
+
+	LabelLocation::LabelLocation(const std::string &labelName) : labelName {labelName} {}
+
+	// MemoryLocation
+
+	MemoryLocation::MemoryLocation(const std::string &reg_id, int64_t offset) :
+		reg {reg_id}, offset {offset}
+	{};
 
 	// Number methods
 
 	Number::Number(int64_t value) : value {value} {}
 
-	std::string Number::toString() const {
-		return std::string("Number ") + std::to_string(this->value);
-	}
+	// std::string Number::toString() const {
+	// 	return std::string("Number ") + std::to_string(this->value);
+	// }
 
-	// Label methods
+	// // Label methods
 
-	Label::Label(const std::string &name) : name {name} {}
+	// Label::Label(const std::string &name) : name {name} {}
 
-	std::string Label::toString() const {
-		return std::string("Label :") + this->name;
-	}
+	// std::string Label::toString() const {
+	// 	return std::string("Label :") + this->name;
+	// }
 
-	// FunctionName methods
+	// // FunctionName methods
 
-	FunctionName::FunctionName(const std::string &name) : name {name} {}
+	// FunctionName::FunctionName(const std::string &name) : name {name} {}
 
-	std::string FunctionName::toString() const {
-		return std::string("FunctionName @") + this->name;
-	}
+	// std::string FunctionName::toString() const {
+	// 	return std::string("FunctionName @") + this->name;
+	// }
 }

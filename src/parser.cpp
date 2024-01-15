@@ -666,8 +666,31 @@ namespace L1 {
 	// using node = pegtl::parse_tree::node;
 	using node_ptr = std::unique_ptr<tao::pegtl::parse_tree::node>;
 
-	std::unique_ptr<arithmetic_value_rule> parse_value(const node_ptr &node) {
-		return {};
+	std::unique_ptr<Value> parse_source_value(const node_ptr &node) {
+		// node is a variant of source_value
+		if (node->is_type<register_rule>()) {
+			return std::make_unique<Register>(node->string());
+		} else if (node->is_type<number>()) {
+			return std::make_unique<Number>(std::stoll(node->string()));
+		} else if (node->is_type<label>()) {
+			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1));
+		} else if (node->is_type<function_name_rule>()) {
+			return std::make_unique<LabelLocation>(node->children[0]->string().substr(1));
+		} else {
+			exit(1);
+			// TODO error
+		}
+	}
+
+	std::unique_ptr<Value> parse_memory_location(const node_ptr &reg_node, const node_ptr &offset_node) {
+		auto reg_id = reg_node->string();
+		auto offset = std::stoll(offset_node->string());
+		if (offset % 8 != 0) {
+			std::cerr << "Offset must be a multiple of 8\n";
+			exit(1);
+		}
+
+		return std::make_unique<MemoryLocation>(reg_id, offset);
 	}
 
 	std::unique_ptr<Instruction> parse_instruction(const node_ptr &inst_node) {
@@ -676,13 +699,19 @@ namespace L1 {
 			auto inst = std::make_unique<InstructionReturn>();
 			return inst;
 		} else if (inst_node->is_type<Instruction_assignment_rule>()) {
+			// children: register_writable, source_value
 			auto inst = std::make_unique<InstructionAssignment>();
 			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
-			inst->source = std::make_unique<Register>(inst_node->children[1]->string());
-			// TODO ^above could be an immediate or label
+			inst->source = parse_source_value(inst_node->children[1]);
+			return inst;
+		} else if (inst_node->is_type<Instruction_memory_read_rule>()) {
+			// children: register_writable, register, number
+			auto inst = std::make_unique<InstructionAssignment>();
+			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
+			inst->source = parse_memory_location(inst_node->children[1], inst_node->children[2]);
 			return inst;
 		} else {
-			// unknown instruction type
+			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
 			exit(1);
 		}
 	}

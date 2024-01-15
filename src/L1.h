@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -37,14 +38,20 @@ namespace L1 {
 	struct MemoryLocation : Value {
 		Register reg;
 		int64_t offset;
+
+		MemoryLocation(const std::string &reg_id, int64_t offset);
 	};
 
 	struct Number : Value {
 		int64_t value;
+
+		Number(int64_t value);
 	};
 
-	struct FunctionName  {
-		std::string name;
+	struct LabelLocation : Value {
+		std::string labelName;
+
+		LabelLocation(const std::string &labelName);
 	};
 
 	/*
@@ -52,7 +59,7 @@ namespace L1 {
 	 */
 	struct Instruction {};
 
-	struct Label : Instruction {
+	struct InstructionLabel : Instruction {
 		std::string name;
 	};
 
