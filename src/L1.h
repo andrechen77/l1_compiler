@@ -68,6 +68,7 @@ namespace L1 {
 	 */
 	struct InstructionReturn : Instruction {};
 
+	// TODO rename to `AssignOperator` for consistency
 	enum struct AssignOperation {
 		pure,
 		add,
@@ -84,6 +85,21 @@ namespace L1 {
 		std::unique_ptr<Value> source;
 		AssignOperation op;
 		std::unique_ptr<Value> destination;
+	};
+
+	enum struct ComparisonOperator {
+		lt,
+		le,
+		eq
+	};
+
+	ComparisonOperator toComparisonOperator(const std::string &str);
+
+	struct InstructionCompareAssignment : Instruction {
+		std::unique_ptr<Register> destination;
+		ComparisonOperator op;
+		std::unique_ptr<Value> lhs;
+		std::unique_ptr<Value> rhs;
 	};
 
 	/*

@@ -730,6 +730,14 @@ namespace L1 {
 			inst->op = toAssignOperation(inst_node->children[1]->string());
 			inst->source = parse_source_value(inst_node->children[2]);
 			return inst;
+		} else if (inst_node->is_type<Instruction_assignment_compare_rule>()) {
+			// children: register_writable, arithmetic_value, comparison_operator, arithmetic_value
+			auto inst = std::make_unique<InstructionCompareAssignment>();
+			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
+			inst->lhs = parse_source_value(inst_node->children[1]);
+			inst->op = toComparisonOperator(inst_node->children[2]->string());
+			inst->rhs = parse_source_value(inst_node->children[3]);
+			return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
 			exit(1);

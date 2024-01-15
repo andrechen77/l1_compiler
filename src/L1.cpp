@@ -54,6 +54,18 @@ namespace L1 {
 		return strToAssOp[str];
 	}
 
+	// ComparisonOperator
+
+	std::map<std::string, ComparisonOperator> strToCmpOp {
+		{"<", ComparisonOperator::lt},
+		{"<=", ComparisonOperator::le},
+		{"=", ComparisonOperator::eq}
+	};
+
+	ComparisonOperator toComparisonOperator(const std::string &str) {
+		return strToCmpOp[str];
+	}
+
 	// Number methods
 
 	Number::Number(int64_t value) : value {value} {}
