@@ -377,7 +377,7 @@ namespace L1 {
 					case 1:
 						return "\tcall array_tensor_error_null\n";
 					case 3:
-						return "\tcall array_tensor\n";
+						return "\tcall array_error\n";
 					case 4:
 						return "\tcall tensor_error\n";
 					default:
