@@ -64,11 +64,15 @@ namespace L1 {
 		virtual std::string toString() const override;
 	};
 
+	struct Program;
+	struct Function;
+
 	/*
 	 * Instruction interface.
 	 */
 	struct Instruction {
 		virtual std::string toString() const = 0;
+		virtual std::string to_x86(Program &p, Function &f) const;
 	};
 
 	struct InstructionLabel : Instruction {

@@ -186,4 +186,10 @@ namespace L1 {
 		}
 		return result + "\n)";
 	}
+
+	// to_x86 methods here
+
+	std::string Instruction::to_x86(Program &p, Function &f) const {
+		return "\ti am instruction lol\n";
+	}
 }
