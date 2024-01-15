@@ -1,4 +1,5 @@
 #include "L1.h"
+#include "code_generator.h"
 #include <map>
 
 namespace L1 {
@@ -191,6 +192,10 @@ namespace L1 {
 
 	std::string Instruction::to_x86(Program &p, Function &f) const {
 		return "\ti am instruction lol\n";
+	}
+
+	std::string InstructionLabel::to_x86(Program &p, Function &f) const {
+		return L1::mangle_name(this->label->labelName) + ":\n";
 	}
 
 	std::string InstructionReturn::to_x86(Program &p, Function &f) const {
