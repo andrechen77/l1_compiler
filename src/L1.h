@@ -68,8 +68,19 @@ namespace L1 {
 	 */
 	struct InstructionReturn : Instruction {};
 
+	enum struct AssignOperation {
+		pure,
+		add,
+		subtract,
+		multiply,
+		bitwise_and,
+		lshift,
+		rshift
+	};
+
 	struct InstructionAssignment : Instruction {
 		std::unique_ptr<Value> source;
+		AssignOperation op;
 		std::unique_ptr<Value> destination;
 	};
 

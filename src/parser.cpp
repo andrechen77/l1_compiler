@@ -703,12 +703,14 @@ namespace L1 {
 			auto inst = std::make_unique<InstructionAssignment>();
 			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
 			inst->source = parse_source_value(inst_node->children[1]);
+			inst->op = AssignOperation::pure;
 			return inst;
 		} else if (inst_node->is_type<Instruction_memory_read_rule>()) {
 			// children: register_writable, register, number
 			auto inst = std::make_unique<InstructionAssignment>();
 			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
 			inst->source = parse_memory_location(inst_node->children[1], inst_node->children[2]);
+			inst->op = AssignOperation::pure;
 			return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
