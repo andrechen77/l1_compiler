@@ -766,6 +766,11 @@ namespace L1 {
 			inst->rhs = parse_source_value(inst_node->children[2]);
 			inst->labelName = inst_node->children[3]->string();
 			return inst;
+		} else if (inst_node->is_type<label>()) {
+			// children: name
+			auto inst = std::make_unique<InstructionLabel>();
+			inst->name = inst_node->children[0]->string();
+			return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
 			exit(1);
