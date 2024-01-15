@@ -215,12 +215,21 @@ namespace L1 {
 	}
 
 	std::string InstructionAssignment::to_x86(Program &p, Function &f) const {
-		static std::string x86_keywords[] = {"movq", "addq", "subq", "mulq", "andq", "salq", "salq"};
+        static const std::string x86_keywords[] = {"movq", "addq", "subq", "mulq", "andq", "salq", "salq"};
         std::string result = "\t";
-        result += x86_keywords[static_cast<int>(op)] + " ";
-        result += source->to_x86(p, f) + ", ";
-        result += destination->to_x86(p, f) + "\n";
-		return result;
+        std::string operator_str = x86_keywords[static_cast<int>(op)];
+        std::string source = this->source->to_x86(p, f);
+        std::string destination = this->destination->to_x86(p, f);
+
+		// TODO figure out a better way to check
+		if (this->op == AssignOperation::lshift || this->op == AssignOperation::rshift) {
+			auto reg_ptr = dynamic_cast<Register *>(this->source.get());
+			if (reg_ptr && reg_ptr->id == RegisterID::rcx) {
+            	source = "%cl";
+			}
+		}
+        result += operator_str + " " + source + ", " + destination + "\n";
+        return result;
     }
 
     std::string Value::to_x86(Program &p, Function &f) const {
