@@ -764,17 +764,15 @@ namespace L1 {
 			inst->lhs = parse_source_value(inst_node->children[0]);
 			inst->op = toComparisonOperator(inst_node->children[1]->string());
 			inst->rhs = parse_source_value(inst_node->children[2]);
-			inst->labelName = inst_node->children[3]->children[0]->string();
+			inst->labelName = std::make_unique<LabelLocation>(inst_node->children[3]->children[0]->string());
 			return inst;
 		} else if (inst_node->is_type<label>()) {
 			// children: name
-			auto inst = std::make_unique<InstructionLabel>();
-			inst->name = inst_node->children[0]->string();
-			return inst;
+			return std::make_unique<InstructionLabel>(inst_node->children[0]->string());
 		} else if (inst_node->is_type<Instruction_goto_rule>()) {
 			// children: label
 			auto inst = std::make_unique<InstructionGoto>();
-			inst->labelName = inst_node->children[0]->children[0]->string();
+			inst->labelName = std::make_unique<LabelLocation>(inst_node->children[0]->children[0]->string());
 			return inst;
 		} else if (inst_node->is_type<Instruction_call_print_rule>()) {
             auto inst = std::make_unique<InstructionCallFunction>();
@@ -832,10 +830,9 @@ namespace L1 {
             inst->regOffset = std::make_unique<Register>(inst_node->children[2]->string());
             inst->scale = std::stoll(inst_node->children[3]->string());
             return inst;
-		} else {
-			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
-			exit(1);
 		}
+		std::cerr << "unknown instruction type " << inst_node->type << std::endl;
+		exit(1);
 	}
 
 	std::unique_ptr<Function> parse_function(const node_ptr &function_rule) {

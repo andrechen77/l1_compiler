@@ -74,6 +74,10 @@ namespace L1 {
 	// 	return std::string("Number ") + std::to_string(this->value);
 	// }
 
+	// InstructionLabel
+
+	InstructionLabel::InstructionLabel(const std::string &labelName) : label {labelName} {}
+
 	// // Label methods
 
 	// Label::Label(const std::string &name) : name {name} {}

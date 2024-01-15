@@ -60,7 +60,9 @@ namespace L1 {
 	struct Instruction {};
 
 	struct InstructionLabel : Instruction {
-		std::string name;
+		std::unique_ptr<LabelLocation> label;
+
+		InstructionLabel(const std::string &labelName);
 	};
 
 	/*
@@ -106,11 +108,11 @@ namespace L1 {
 		ComparisonOperator op;
 		std::unique_ptr<Value> lhs;
 		std::unique_ptr<Value> rhs;
-		std::string labelName;
+		std::unique_ptr<LabelLocation> labelName;
 	};
 
 	struct InstructionGoto : Instruction {
-		std::string labelName;
+		std::unique_ptr<LabelLocation> labelName;
 	};
 
 	struct InstructionCallFunction : Instruction {
