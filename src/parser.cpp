@@ -732,13 +732,13 @@ namespace L1 {
 		} else if (inst_node->is_type<Instruction_plus_write_memory_rule>()) {
             auto inst = std::make_unique<InstructionAssignment>();
             inst->destination = parse_memory_location(inst_node->children[0], inst_node->children[1]);
-            inst->source = std::make_unique<Register>(inst_node->children[2]->string());
+            inst->source = parse_source_value(inst_node->children[2]);
             inst->op = AssignOperation::add;
 			return inst;
         } else if (inst_node->is_type<Instruction_minus_write_memory_rule>()) {
             auto inst = std::make_unique<InstructionAssignment>();
             inst->destination = parse_memory_location(inst_node->children[0], inst_node->children[1]);
-            inst->source = std::make_unique<Register>(inst_node->children[2]->string());
+            inst->source = parse_source_value(inst_node->children[2]);
             inst->op = AssignOperation::subtract;
 			return inst;
         } else if (inst_node->is_type<Instruction_plus_read_memory_rule>()) {
