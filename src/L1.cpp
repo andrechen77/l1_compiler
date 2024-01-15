@@ -76,7 +76,7 @@ namespace L1 {
 
 	// InstructionLabel
 
-	InstructionLabel::InstructionLabel(const std::string &labelName) : label {labelName} {}
+	InstructionLabel::InstructionLabel(const std::string &labelName) : label {std::make_unique<LabelLocation>(labelName)} {}
 
 	// // Label methods
 

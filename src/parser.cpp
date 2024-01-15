@@ -694,7 +694,6 @@ namespace L1 {
 	}
 
 	std::unique_ptr<Instruction> parse_instruction(const node_ptr &inst_node) {
-		std::cout << "found a " << inst_node->type << " instruction\n";
 		if (inst_node->is_type<Instruction_return_rule>()) {
 			auto inst = std::make_unique<InstructionReturn>();
 			return inst;
@@ -735,21 +734,25 @@ namespace L1 {
             inst->destination = parse_memory_location(inst_node->children[0], inst_node->children[1]);
             inst->source = std::make_unique<Register>(inst_node->children[2]->string());
             inst->op = AssignOperation::add;
+			return inst;
         } else if (inst_node->is_type<Instruction_minus_write_memory_rule>()) {
             auto inst = std::make_unique<InstructionAssignment>();
             inst->destination = parse_memory_location(inst_node->children[0], inst_node->children[1]);
             inst->source = std::make_unique<Register>(inst_node->children[2]->string());
             inst->op = AssignOperation::subtract;
+			return inst;
         } else if (inst_node->is_type<Instruction_plus_read_memory_rule>()) {
             auto inst = std::make_unique<InstructionAssignment>();
             inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
             inst->source = parse_memory_location(inst_node->children[1], inst_node->children[2]);
             inst->op = AssignOperation::add;
+			return inst;
         } else if (inst_node->is_type<Instruction_minus_read_memory_rule>()) {
             auto inst = std::make_unique<InstructionAssignment>();
             inst->destination = std::make_unique<Register>(inst_node->children[2]->string());
             inst->source = parse_memory_location(inst_node->children[1], inst_node->children[2]);
             inst->op = AssignOperation::subtract;
+			return inst;
 		} else if (inst_node->is_type<Instruction_assignment_compare_rule>()) {
 			// children: register_writable, arithmetic_value, comparison_operator, arithmetic_value
 			auto inst = std::make_unique<InstructionCompareAssignment>();
