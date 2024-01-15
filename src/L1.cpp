@@ -290,7 +290,7 @@ namespace L1 {
 	}
 
 	std::string LabelLocation::to_x86(Program &p, Function &f) const {
-		return "_" + labelName;
+		return "$_" + labelName;
 	}
 
 	static const std::string x86_cmp_keywords[] = {"l", "le", "eq", "ge", "g"};
