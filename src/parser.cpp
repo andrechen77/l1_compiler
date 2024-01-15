@@ -776,6 +776,31 @@ namespace L1 {
 			auto inst = std::make_unique<InstructionGoto>();
 			inst->labelName = inst_node->children[0]->children[0]->string();
 			return inst;
+		} else if (inst_node->is_type<Instruction_call_print_rule>()) {
+            auto inst = std::make_unique<InstructionCallFunction>();
+            inst->functionName = "print";
+            inst->num_arguments = 1;
+            return inst;
+		} else if (inst_node->is_type<Instruction_call_allocate_rule>()) {
+            auto inst = std::make_unique<InstructionCallFunction>();
+            inst->functionName = "allocate";
+            inst->num_arguments = 2;
+            return inst;
+        } else if (inst_node->is_type<Instruction_call_input_rule>()) {
+            auto inst = std::make_unique<InstructionCallFunction>();
+            inst->functionName = "input";
+            inst->num_arguments = 0;
+            return inst;
+        } else if (inst_node->is_type<Instruction_call_tuple_error_rule>()) {
+            auto inst = std::make_unique<InstructionCallFunction>();
+            inst->functionName = "tuple_error";
+            inst->num_arguments = 3;
+            return inst;
+        } else if (inst_node->is_type<Instruction_call_tensor_error_rule>()) {
+            auto inst = std::make_unique<InstructionCallFunction>();
+            inst->functionName = "tensor_errorr";
+            inst->num_arguments = std::stoll(inst_node->children[0]->string());
+            return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
 			exit(1);

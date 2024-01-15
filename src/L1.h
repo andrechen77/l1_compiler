@@ -113,6 +113,11 @@ namespace L1 {
 		std::string labelName;
 	};
 
+	struct InstructionCallFunction : Instruction {
+        std::string functionName;
+        int64_t num_arguments;
+    };
+
 	/*
 	 * Function.
 	 */
