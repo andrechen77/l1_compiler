@@ -749,7 +749,7 @@ namespace L1 {
 			return inst;
         } else if (inst_node->is_type<Instruction_minus_read_memory_rule>()) {
             auto inst = std::make_unique<InstructionAssignment>();
-            inst->destination = std::make_unique<Register>(inst_node->children[2]->string());
+            inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
             inst->source = parse_memory_location(inst_node->children[1], inst_node->children[2]);
             inst->op = AssignOperation::subtract;
 			return inst;
