@@ -27,9 +27,15 @@ namespace L1 {
 
 	Register::Register(const std::string &id) : id {strToRegId[id]}, str {id} {}
 
-	// std::string Register::toString() const {
-	// 	return std::string("Register ") + this->str;
-	// }
+	std::string Register::lowerBytesName() const {
+		static const std::string lowerNames[] = {
+			"al", "bl", "cl", "dl",
+			"dil", "sil", "r8b", "r9b",
+			"r10b", "r11b", "r12b", "r13b",
+			"r14b", "r15b", "bpl"
+		};
+		return lowerNames[static_cast<int>(this->id)];
+	}
 
 	// LabelLocation
 
@@ -71,6 +77,20 @@ namespace L1 {
 
 	ComparisonOperator toComparisonOperator(const std::string &str) {
 		return strToCmpOp[str];
+	}
+
+	bool executeComparisonOperator(ComparisonOperator op, int64_t lhs, int64_t rhs) {
+		switch (op) {
+			case ComparisonOperator::lt:
+				return lhs < rhs;
+			case ComparisonOperator::le:
+				return lhs <= rhs;
+			case ComparisonOperator::eq:
+				return lhs == rhs;
+			default:
+				std::cerr << "not posdifasdfjeble" << std::endl;
+				exit(1);
+		}
 	}
 
 	std::string cmpOpToStr(ComparisonOperator op) {
@@ -254,6 +274,42 @@ namespace L1 {
     std::string LabelLocation::to_x86(Program &p, Function &f) const {
         return "_" + labelName;
     }
+
+	std::string InstructionCompareAssignment::to_x86(Program &p, Function &f) const {
+		static const std::string x86_cmp_keywords[] = {"l", "le", "eq", "ge", "g"};
+
+		Value *lhs = this->lhs.get();
+		Value *rhs = this->rhs.get();
+
+		Number *l_num_ptr = dynamic_cast<Number *>(this->lhs.get());
+		Number *r_num_ptr = dynamic_cast<Number *>(this->rhs.get());
+
+		if (l_num_ptr && r_num_ptr) {
+			// both are constants
+			int64_t lhs_value = l_num_ptr->value;
+			int64_t rhs_value = r_num_ptr->value;
+			bool result = executeComparisonOperator(this->op, lhs_value, rhs_value);
+			return std::string("\tmovq $") + (result ? "1" : "0") + ", " + this->destination->to_x86(p, f) + "\n";
+		}
+
+		int swap = 1; // whether to use gt/ge operators instead of le/lt
+		if (l_num_ptr) {
+			// lhs is a constant so swap lhs and rhs so that lhs is non-constant
+			auto temp = lhs;
+			lhs = rhs;
+			rhs = temp;
+			swap = -1;
+		}
+
+		std::string lowerBits = dynamic_cast<Register *>(lhs)->lowerBytesName();
+		std::string result = "\tcmpq ";
+		result += rhs->to_x86(p, f) + ", " + lhs->to_x86(p, f) + "\n";
+		result += "\tset" + x86_cmp_keywords[static_cast<int>(this->op) * swap + 2];
+		result += " %" + lowerBits + "\n";
+		result += "\tmovzbq %" + lowerBits + ", " + lhs->to_x86(p, f) + "\n";
+		return result;
+	}
+
 
 	std::string InstructionGoto::to_x86(Program &p, Function &f) const {
 		return std::string("\tjmp ") + L1::mangle_name(this->label->labelName) + "\n";

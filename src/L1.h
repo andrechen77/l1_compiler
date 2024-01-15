@@ -41,6 +41,7 @@ namespace L1 {
 
 		virtual std::string toString() const override;
 		virtual std::string to_x86(Program &p, Function &f) const override;
+		std::string lowerBytesName() const;
 	};
 
 
@@ -119,12 +120,14 @@ namespace L1 {
 	};
 
 	enum struct ComparisonOperator {
-		lt,
-		le,
-		eq
+		lt = -2,
+		le = -1,
+		eq = 0
 	};
 
 	ComparisonOperator toComparisonOperator(const std::string &str);
+
+	bool executeComparisonOperator(ComparisonOperator op, int64_t lhs, int64_t rhs);
 
 	struct InstructionCompareAssignment : Instruction {
 		std::unique_ptr<Register> destination;
@@ -133,6 +136,7 @@ namespace L1 {
 		std::unique_ptr<Value> rhs;
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
 
 	struct InstructionCompareJump : Instruction {
