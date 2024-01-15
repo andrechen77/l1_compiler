@@ -192,7 +192,7 @@ namespace L1 {
 	// to_x86 methods here
 
 	std::string Instruction::to_x86(Program &p, Function &f) const {
-		return "\ti am instruction lol\n";
+		return "\t// -----\n";
 	}
 
 	std::string InstructionLabel::to_x86(Program &p, Function &f) const {
@@ -215,7 +215,7 @@ namespace L1 {
 	}
 
 	std::string InstructionGoto::to_x86(Program &p, Function &f) const {
-		return std::string("\tgoto ") + L1::mangle_name(this->label->labelName) + "\n";
+		return std::string("\tjmp ") + L1::mangle_name(this->label->labelName) + "\n";
 	}
 
 	std::string InstructionCallFunction::to_x86(Program &p, Function &f) const {
