@@ -1,0 +1,60 @@
+// here
+
+(@main
+
+	// there
+
+	(@main
+
+		// everywhere
+
+		1
+
+		// should be legal
+
+		2
+
+		// comment
+
+		:label
+		rax <- rbx
+		rax <- mem rsi 0
+		mem rdi 0 <- rax
+		rax += rbx
+		rax <<= rcx
+		rax <<= 2
+		mem rdi 0 += rax
+		mem rdi 0 -= rax
+		rax += mem rsi 0
+		rax -= mem rsi 0
+		// rax <- 0 < rsi
+		rax <- rsi < 0
+		rax <- 0 < 0
+		cjump rsi < 0 :label
+		goto :otherlabel
+
+		:otherlabel
+		// comment
+
+		call @fuction 0
+
+		rax++
+		rax--
+
+		rax @ rbx rcx 8
+
+		return
+	)
+
+	(@fuction
+		0 1
+
+		call allocate 2
+		call tuple-error 3
+		call tensor-error 4
+		call print 1
+		call input 0
+
+		return
+	)
+)

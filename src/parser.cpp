@@ -530,6 +530,7 @@ namespace L1 {
 
 	struct Instruction_rule : sor<
 		with_lookahead<Instruction_return_rule>,
+		with_lookahead<Instruction_assignment_compare_rule>,
 		with_lookahead<Instruction_assignment_rule>,
 		with_lookahead<Instruction_memory_read_rule>,
 		with_lookahead<Instruction_memory_write_rule>,
@@ -540,7 +541,6 @@ namespace L1 {
 		with_lookahead<Instruction_plus_read_memory_rule>,
 		with_lookahead<Instruction_minus_write_memory_rule>,
 		with_lookahead<Instruction_minus_read_memory_rule>,
-		with_lookahead<Instruction_assignment_compare_rule>,
 		with_lookahead<Instruction_cjump_rule>,
 		with_lookahead<label>,
 		with_lookahead<Instruction_goto_rule>,
