@@ -821,17 +821,13 @@ namespace L1 {
 				return inst;
             }
 		} else if (inst_node->is_type<Instruction_writable_increment_rule>()) {
-			auto inst = std::make_unique<InstructionAssignment>();
-			inst->source = std::make_unique<Number>(1);
-			inst->op = AssignOperation::add;
-			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
-			return inst;
-		} else if (inst_node->is_type<Instruction_writable_decrement_rule>()) {
-			auto inst = std::make_unique<InstructionAssignment>();
-			inst->source = std::make_unique<Number>(1);
-			inst->op = AssignOperation::subtract;
-			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
-			return inst;
+            auto inst = std::make_unique<InstructionIncrement>();
+            inst->reg = std::make_unique<Register>(inst_node->children[0]->string());
+            return inst;
+        } else if (inst_node->is_type<Instruction_writable_decrement_rule>()) {
+            auto inst = std::make_unique<InstructionDecrement>();
+            inst->reg = std::make_unique<Register>(inst_node->children[0]->string());
+            return inst;
 		} else if (inst_node->is_type<Instruction_leaq_rule>()) {
             auto inst = std::make_unique<InstructionLeaq>();
             inst->regStore = std::make_unique<Register>(inst_node->children[0]->string());

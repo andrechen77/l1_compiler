@@ -189,6 +189,20 @@ namespace L1 {
 		return result + "]";
 	}
 
+	std::string InstructionIncrement::toString() const {
+        std::string result = "[increment ";
+        result += reg->toString();
+        result += "++ ]";
+		return result;
+    }
+
+    std::string InstructionDecrement::toString() const {
+        std::string result =  "[decrement ";
+        result += reg->toString();
+        result += "-- ]";
+		return result;
+    }
+
 	std::string Function::toString() const {
 		std::string result = "\t(";
 		result += this->name;
@@ -379,4 +393,12 @@ namespace L1 {
 				"\tjmp " + L1::mangle_name(this->functionName) + "\n";
 		}
 	}
+
+	std::string InstructionIncrement::to_x86(Program &p, Function &f) const {
+        return "\tinc " + reg->to_x86(p, f) + "\n";
+    }
+
+    std::string InstructionDecrement::to_x86(Program &p, Function &f) const {
+        return "\tdec " + reg->to_x86(p, f) + "\n";
+    }
 }

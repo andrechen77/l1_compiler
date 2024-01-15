@@ -181,6 +181,21 @@ namespace L1 {
 		virtual std::string toString() const override;
 	};
 
+	struct InstructionIncrement: Instruction{
+        std::unique_ptr<Register> reg;
+
+        virtual std::string toString() const override;
+        virtual std::string to_x86(Program &p, Function &f) const override;
+    };
+
+    struct InstructionDecrement: Instruction {
+        std::unique_ptr<Register> reg;
+
+        virtual std::string toString() const override;
+        virtual std::string to_x86(Program &p, Function &f) const override;
+    };
+
+
 	/*
 	 * Function.
 	 */
