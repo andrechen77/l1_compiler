@@ -712,6 +712,24 @@ namespace L1 {
 			inst->source = parse_memory_location(inst_node->children[1], inst_node->children[2]);
 			inst->op = AssignOperation::pure;
 			return inst;
+		} else if (inst_node->is_type<Instruction_memory_write_rule>()) {
+			// children: register, number, register_writable
+			auto inst = std::make_unique<InstructionAssignment>();
+			inst->destination = parse_memory_location(inst_node->children[0], inst_node->children[1]);
+			inst->source = std::make_unique<Register>(inst_node->children[2]->string());
+			inst->op = AssignOperation::pure;
+			return inst;
+		} else if (
+			inst_node->is_type<Instruction_arithmetic_operation_rule>() ||
+			inst_node->is_type<Instruction_shift_operation_register_rule>() ||
+			inst_node->is_type<Instruction_shift_operation_immediate_rule>()
+		) {
+			// children: register_writable, arithmetic_operator, arithmetic_value
+			auto inst = std::make_unique<InstructionAssignment>();
+			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
+			inst->op = toAssignOperation(inst_node->children[1]->string());
+			inst->source = parse_source_value(inst_node->children[2]);
+			return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
 			exit(1);

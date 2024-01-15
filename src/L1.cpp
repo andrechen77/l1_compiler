@@ -39,6 +39,21 @@ namespace L1 {
 		reg {reg_id}, offset {offset}
 	{};
 
+	// AssignOperation
+
+	std::map<std::string, AssignOperation> strToAssOp {
+		{"<-", AssignOperation::pure},
+		{"+=", AssignOperation::add},
+		{"-=", AssignOperation::subtract},
+		{"*=", AssignOperation::multiply},
+		{"&=", AssignOperation::bitwise_and},
+		{"<<=", AssignOperation::lshift},
+		{">>=", AssignOperation::rshift}
+	};
+	AssignOperation toAssignOperation(const std::string &str) {
+		return strToAssOp[str];
+	}
+
 	// Number methods
 
 	Number::Number(int64_t value) : value {value} {}

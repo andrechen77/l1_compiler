@@ -78,6 +78,8 @@ namespace L1 {
 		rshift
 	};
 
+	AssignOperation toAssignOperation(const std::string &str);
+
 	struct InstructionAssignment : Instruction {
 		std::unique_ptr<Value> source;
 		AssignOperation op;
