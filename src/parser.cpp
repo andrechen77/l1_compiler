@@ -825,6 +825,13 @@ namespace L1 {
 			inst->op = AssignOperation::subtract;
 			inst->destination = std::make_unique<Register>(inst_node->children[0]->string());
 			return inst;
+		} else if (inst_node->is_type<Instruction_leaq_rule>()) {
+            auto inst = std::make_unique<InstructionLeaq>();
+            inst->regStore = std::make_unique<Register>(inst_node->children[0]->string());
+            inst->regRead = std::make_unique<Register>(inst_node->children[1]->string());
+            inst->regOffset = std::make_unique<Register>(inst_node->children[2]->string());
+            inst->scale = std::stoll(inst_node->children[3]->string());
+            return inst;
 		} else {
 			std::cerr << "unknown instruction type " << inst_node->type << std::endl;
 			exit(1);

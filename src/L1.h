@@ -123,6 +123,13 @@ namespace L1 {
         int64_t num_arguments;
     };
 
+	struct InstructionLeaq : Instruction {
+        std::unique_ptr<Register> regStore;
+        std::unique_ptr<Register> regRead;
+        std::unique_ptr<Register> regOffset;
+        int64_t scale;
+    };
+
 	/*
 	 * Function.
 	 */
