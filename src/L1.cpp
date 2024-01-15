@@ -190,18 +190,18 @@ namespace L1 {
 	}
 
 	std::string InstructionIncrement::toString() const {
-        std::string result = "[increment ";
-        result += reg->toString();
-        result += "++ ]";
+		std::string result = "[increment ";
+		result += reg->toString();
+		result += "++ ]";
 		return result;
-    }
+	}
 
-    std::string InstructionDecrement::toString() const {
-        std::string result =  "[decrement ";
-        result += reg->toString();
-        result += "-- ]";
+	std::string InstructionDecrement::toString() const {
+		std::string result =  "[decrement ";
+		result += reg->toString();
+		result += "-- ]";
 		return result;
-    }
+	}
 
 	std::string Function::toString() const {
 		std::string result = "\t(";
@@ -249,45 +249,45 @@ namespace L1 {
 	}
 
 	std::string InstructionAssignment::to_x86(Program &p, Function &f) const {
-        static const std::string x86_keywords[] = {"movq", "addq", "subq", "mulq", "andq", "salq", "salq"};
-        std::string result = "\t";
-        std::string operator_str = x86_keywords[static_cast<int>(op)];
-        std::string source = this->source->to_x86(p, f);
-        std::string destination = this->destination->to_x86(p, f);
+		static const std::string x86_keywords[] = {"movq", "addq", "subq", "mulq", "andq", "salq", "salq"};
+		std::string result = "\t";
+		std::string operator_str = x86_keywords[static_cast<int>(op)];
+		std::string source = this->source->to_x86(p, f);
+		std::string destination = this->destination->to_x86(p, f);
 
 		// TODO figure out a better way to check
 		if (this->op == AssignOperation::lshift || this->op == AssignOperation::rshift) {
 			auto reg_ptr = dynamic_cast<Register *>(this->source.get());
 			if (reg_ptr && reg_ptr->id == RegisterID::rcx) {
-            	source = "%cl";
+				source = "%cl";
 			}
 		}
-        result += operator_str + " " + source + ", " + destination + "\n";
-        return result;
-    }
+		result += operator_str + " " + source + ", " + destination + "\n";
+		return result;
+	}
 
-    std::string Value::to_x86(Program &p, Function &f) const {
-        return "I am a value YAY";
-    }
+	std::string Value::to_x86(Program &p, Function &f) const {
+		return "I am a value YAY";
+	}
 
-    std::string Register::to_x86(Program &p, Function &f) const {
-        std::string result = "%" + str;
-        return result;
-    }
+	std::string Register::to_x86(Program &p, Function &f) const {
+		std::string result = "%" + str;
+		return result;
+	}
 
-    std::string MemoryLocation::to_x86(Program &p, Function &f) const {
-        std::string result = std::to_string(offset);
-        result += "(" + reg.to_x86(p, f) + ")";
-        return result;
-    }
+	std::string MemoryLocation::to_x86(Program &p, Function &f) const {
+		std::string result = std::to_string(offset);
+		result += "(" + reg.to_x86(p, f) + ")";
+		return result;
+	}
 
-    std::string Number::to_x86(Program &p, Function &f) const {
-        return "$" + std::to_string(value);
-    }
+	std::string Number::to_x86(Program &p, Function &f) const {
+		return "$" + std::to_string(value);
+	}
 
-    std::string LabelLocation::to_x86(Program &p, Function &f) const {
-        return "_" + labelName;
-    }
+	std::string LabelLocation::to_x86(Program &p, Function &f) const {
+		return "_" + labelName;
+	}
 
 	static const std::string x86_cmp_keywords[] = {"l", "le", "eq", "ge", "g"};
 
@@ -394,11 +394,20 @@ namespace L1 {
 		}
 	}
 
-	std::string InstructionIncrement::to_x86(Program &p, Function &f) const {
-        return "\tinc " + reg->to_x86(p, f) + "\n";
-    }
+	std::string InstructionLeaq::to_x86(Program &p, Function &f) const {
+		std::string result = "\tlea (";
+		result += regRead->to_x86(p, f) + ", ";
+		result += regOffset->to_x86(p, f) + ", ";
+		result += std::to_string(scale) + "), ";
+		result += regStore->to_x86(p, f) + "\n";
+		return result;
+	}
 
-    std::string InstructionDecrement::to_x86(Program &p, Function &f) const {
-        return "\tdec " + reg->to_x86(p, f) + "\n";
-    }
+	std::string InstructionIncrement::to_x86(Program &p, Function &f) const {
+		return "\tinc " + reg->to_x86(p, f) + "\n";
+	}
+
+	std::string InstructionDecrement::to_x86(Program &p, Function &f) const {
+		return "\tdec " + reg->to_x86(p, f) + "\n";
+	}
 }
