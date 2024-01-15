@@ -349,7 +349,7 @@ namespace L1 {
 		spaces,
 		str_arrow,
 		spaces,
-		register_writable_rule
+		source_value_rule
 	> {};
 
 	struct Instruction_arithmetic_operation_rule : seq<
@@ -715,7 +715,7 @@ namespace L1 {
 			// children: register, number, register_writable
 			auto inst = std::make_unique<InstructionAssignment>();
 			inst->destination = parse_memory_location(inst_node->children[0], inst_node->children[1]);
-			inst->source = std::make_unique<Register>(inst_node->children[2]->string());
+			inst->source = parse_source_value(inst_node->children[2]);
 			inst->op = AssignOperation::pure;
 			return inst;
 		} else if (
@@ -888,14 +888,14 @@ namespace L1 {
 		file_input<> fileInput(fileName);
 		auto root = pegtl::parse_tree::parse<grammar, selector>(fileInput);
 		if (root) {
+			parse_tree::print_dot( std::cout, *root );
+		}
+		if (root) {
 			return parse_tree(root);
 		} else {
 			std::cerr << "no prase u bad" << std::endl;
 			exit(1);
 		}
-		// if (root) {
-		// 	parse_tree::print_dot( std::cout, *root );
-		// }
 
 	}
 }
