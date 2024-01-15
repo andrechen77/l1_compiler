@@ -6,6 +6,9 @@
 
 namespace L1 {
 
+	struct Program;
+	struct Function;
+
 	enum struct RegisterID {
 		rax,
 		rbx,
@@ -27,6 +30,7 @@ namespace L1 {
 
 	struct Value {
 		virtual std::string toString() const = 0;
+		virtual std::string to_x86(Program &p, Function &f) const;
 	};
 
 	struct Register : Value {
@@ -36,6 +40,7 @@ namespace L1 {
 		Register(const std::string &id);
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
 
 
@@ -46,6 +51,7 @@ namespace L1 {
 		MemoryLocation(const std::string &reg_id, int64_t offset);
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
 
 	struct Number : Value {
@@ -54,6 +60,7 @@ namespace L1 {
 		Number(int64_t value);
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
 
 	struct LabelLocation : Value {
@@ -62,10 +69,8 @@ namespace L1 {
 		LabelLocation(const std::string &labelName);
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
-
-	struct Program;
-	struct Function;
 
 	/*
 	 * Instruction interface.
@@ -110,6 +115,7 @@ namespace L1 {
 		std::unique_ptr<Value> destination;
 
 		virtual std::string toString() const override;
+		virtual std::string to_x86(Program &p, Function &f) const override;
 	};
 
 	enum struct ComparisonOperator {
@@ -146,29 +152,29 @@ namespace L1 {
 	};
 
 	struct InstructionCallFunction : Instruction {
-        std::string functionName;
+		std::string functionName;
 		bool isStd;
-        int64_t num_arguments;
+		int64_t num_arguments;
 
 		virtual std::string toString() const override;
 		virtual std::string to_x86(Program &p, Function &f) const override;
-    };
+	};
 
 	struct InstructionCallRegister : Instruction {
-        std::unique_ptr<Register> reg;
-        int64_t num_arguments;
+		std::unique_ptr<Register> reg;
+		int64_t num_arguments;
 
 		virtual std::string toString() const override;
-    };
+	};
 
 	struct InstructionLeaq : Instruction {
-        std::unique_ptr<Register> regStore;
-        std::unique_ptr<Register> regRead;
-        std::unique_ptr<Register> regOffset;
-        int64_t scale;
+		std::unique_ptr<Register> regStore;
+		std::unique_ptr<Register> regRead;
+		std::unique_ptr<Register> regOffset;
+		int64_t scale;
 
 		virtual std::string toString() const override;
-    };
+	};
 
 	/*
 	 * Function.

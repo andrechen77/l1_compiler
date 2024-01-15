@@ -214,6 +214,38 @@ namespace L1 {
 		return std::string("\taddq $") + std::to_string(num_bytes) + ", %rsp\n\tretq\n";
 	}
 
+	std::string InstructionAssignment::to_x86(Program &p, Function &f) const {
+		static std::string x86_keywords[] = {"movq", "addq", "subq", "mulq", "andq", "salq", "salq"};
+        std::string result = "\t";
+        result += x86_keywords[static_cast<int>(op)] + " ";
+        result += source->to_x86(p, f) + ", ";
+        result += destination->to_x86(p, f) + "\n";
+		return result;
+    }
+
+    std::string Value::to_x86(Program &p, Function &f) const {
+        return "I am a value YAY";
+    }
+
+    std::string Register::to_x86(Program &p, Function &f) const {
+        std::string result = "%" + str;
+        return result;
+    }
+
+    std::string MemoryLocation::to_x86(Program &p, Function &f) const {
+        std::string result = std::to_string(offset);
+        result += "(" + reg.to_x86(p, f) + ")";
+        return result;
+    }
+
+    std::string Number::to_x86(Program &p, Function &f) const {
+        return "$" + std::to_string(value);
+    }
+
+    std::string LabelLocation::to_x86(Program &p, Function &f) const {
+        return "_" + labelName;
+    }
+
 	std::string InstructionGoto::to_x86(Program &p, Function &f) const {
 		return std::string("\tjmp ") + L1::mangle_name(this->label->labelName) + "\n";
 	}
