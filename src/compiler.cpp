@@ -66,11 +66,9 @@ int main(
 	/*
 	 * Print the source program.
 	 */
-	// if (verbose) {
-	// 	for (auto f : p.functions) {
-	// 		//TODO
-	// 	}
-	// }
+	if (verbose) {
+		std::cout << p->toString() << std::endl;
+	}
 
 	/*
 	 * Generate x86_64 assembly.

@@ -767,7 +767,7 @@ namespace L1 {
 			inst->lhs = parse_source_value(inst_node->children[0]);
 			inst->op = toComparisonOperator(inst_node->children[1]->string());
 			inst->rhs = parse_source_value(inst_node->children[2]);
-			inst->labelName = std::make_unique<LabelLocation>(inst_node->children[3]->children[0]->string());
+			inst->label = std::make_unique<LabelLocation>(inst_node->children[3]->children[0]->string());
 			return inst;
 		} else if (inst_node->is_type<label>()) {
 			// children: name
@@ -775,7 +775,7 @@ namespace L1 {
 		} else if (inst_node->is_type<Instruction_goto_rule>()) {
 			// children: label
 			auto inst = std::make_unique<InstructionGoto>();
-			inst->labelName = std::make_unique<LabelLocation>(inst_node->children[0]->children[0]->string());
+			inst->label = std::make_unique<LabelLocation>(inst_node->children[0]->children[0]->string());
 			return inst;
 		} else if (inst_node->is_type<Instruction_call_print_rule>()) {
             auto inst = std::make_unique<InstructionCallFunction>();
