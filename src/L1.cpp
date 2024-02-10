@@ -45,7 +45,7 @@ namespace L1 {
 
 	MemoryLocation::MemoryLocation(const std::string &reg_id, int64_t offset) :
 		reg {reg_id}, offset {offset}
-	{};
+	{}
 
 	// AssignOperation
 
@@ -255,11 +255,22 @@ namespace L1 {
 		std::string source = this->source->to_x86(p, f);
 		std::string destination = this->destination->to_x86(p, f);
 
-		// TODO figure out a better way to check
-		if (this->op == AssignOperation::lshift || this->op == AssignOperation::rshift) {
-			auto reg_ptr = dynamic_cast<Register *>(this->source.get());
-			if (reg_ptr && reg_ptr->id == RegisterID::rcx) {
-				source = "%cl";
+		auto src_reg_ptr = dynamic_cast<Register *>(this->source.get());
+		if (src_reg_ptr) {
+			auto dest_reg_ptr = dynamic_cast<Register *>(this->destination.get());
+			if (dest_reg_ptr
+				&& dest_reg_ptr->id == src_reg_ptr->id
+				&& this->op == AssignOperation::pure)
+			{
+				// we're just assigning a register to itself
+				return "";
+			}
+
+			if (src_reg_ptr->id == RegisterID::rcx
+				&& (this->op == AssignOperation::lshift
+					|| this->op == AssignOperation::rshift))
+			{
+					source = "%cl";
 			}
 		}
 		result += operator_str + " " + source + ", " + destination + "\n";
