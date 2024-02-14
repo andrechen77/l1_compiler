@@ -887,9 +887,9 @@ namespace L1 {
 		 */
 		file_input<> fileInput(fileName);
 		auto root = pegtl::parse_tree::parse<grammar, selector>(fileInput);
-		if (root) {
-			parse_tree::print_dot( std::cout, *root );
-		}
+		// if (root) {
+		// 	parse_tree::print_dot( std::cout, *root );
+		// }
 		if (root) {
 			return parse_tree(root);
 		} else {
